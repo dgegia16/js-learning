@@ -69,7 +69,7 @@ const renderCountry = function (data) {
   if (data.length > 1) {
     data.forEach(countryData => {
       console.log(countryData);
-
+      const flagSrc = countryData.flags?.png || '';
       const html = `
           <article class="country">
             <img class="country__img" src="${countryData.flags.png}" />
@@ -128,18 +128,24 @@ const getCountryAndNeighbour = function (country) {
     // Render country
     renderCountry(data);
 
-    // Render its neighbor
-    const neighbour = data.borders?.[0];
-    console.log(data.borders);
-    if (!neighbour) return;
-    const request2 = new XMLHttpRequest();
-    request.open('GET', `https://restcountries.com/v3.1/alpha/${neighbour}`);
-    request.send();
+    // Render its neighbors
+    const neighbours = data[0]?.borders;
+    if (!neighbours || neighbours.length === 0) return;
 
-    request2.addEventListener('load', function(){
-      console.log(this.responseText);
-    })
+    neighbours.forEach(neighbour => {
+      const request2 = new XMLHttpRequest();
+      request2.open('GET', `https://restcountries.com/v3.1/alpha/${neighbour}`);
+      request2.send();
+
+      request2.addEventListener('load', function () {
+        const neighbourData = JSON.parse(this.responseText);
+        console.log('Neighbour Data:', neighbourData);
+
+        // Render the neighbor country using renderCountry
+        renderCountry([neighbourData]);
+      });
+    });
   });
 };
 
-getCountryAndNeighbour('namibia');
+getCountryAndNeighbour('russia');
