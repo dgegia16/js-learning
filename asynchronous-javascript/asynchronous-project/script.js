@@ -3,8 +3,6 @@
 const btn = document.querySelector('.btn-country');
 const countriesContainer = document.querySelector('.countries');
 
-///////////////////////////////////////
-
 const renderCountry = function (data, className = '') {
   if (data.length > 1) {
     data.forEach(countryData => {
@@ -49,9 +47,16 @@ const renderCountry = function (data, className = '') {
       `;
     countriesContainer.insertAdjacentHTML('beforeend', html);
 
-    countriesContainer.style.opacity = 1;
+    // countriesContainer.style.opacity = 1;
   }
 };
+
+const renderError = function (msg) {
+  countriesContainer.insertAdjacentText('beforeend', msg);
+  // countriesContainer.style.opacity = 1;
+};
+
+///////////////////////////////////////
 
 // WITH REQUEST
 
@@ -82,10 +87,18 @@ const getCountryData = function (country) {
       return fetch(`https://restcountries.com/v3.1/alpha/${neighbour}`);
     })
     .then(response => response.json())
-    .then(data2 => renderCountry(data2, 'neighbour'));
+    .then(data2 => renderCountry(data2, 'neighbour'))
+    .catch(err => {
+      renderError(`Something went wrong :@@@@ ${err}`);
+    })
+    .finally(() => {
+      countriesContainer.style.opacity = 1;
+    });
 };
 
-getCountryData('georgia');
+btn.addEventListener('click', function () {
+  getCountryData('france');
+});
 
 // FOR FETCH METHOD
 // getCountry('georgia')
